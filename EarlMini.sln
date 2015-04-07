@@ -11,6 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EarlMini.Api", "EarlMini.Ap
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{3A1C4FE9-991D-4D12-801D-D2B03601E8F3}"
 	ProjectSection(SolutionItems) = preProject
+		LICENSE.txt = LICENSE.txt
 		README.md = README.md
 		Tables.sql = Tables.sql
 	EndProjectSection
