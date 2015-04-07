@@ -120,7 +120,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EarlMini\EarlMini.Core.csproj">
+    <ProjectReference Include="..\EarlMini.Core\EarlMini.Core.csproj">
       <Project>{25a9f5aa-998f-402e-bcdb-ce18b03e4e00}</Project>
       <Name>EarlMini.Core</Name>
     </ProjectReference>
