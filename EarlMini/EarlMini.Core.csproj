@@ -7,8 +7,8 @@
     <ProjectGuid>{25A9F5AA-998F-402E-BCDB-CE18B03E4E00}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EarlMini</RootNamespace>
-    <AssemblyName>EarlMini</AssemblyName>
+    <RootNamespace>EarlMini.Core</RootNamespace>
+    <AssemblyName>EarlMini.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

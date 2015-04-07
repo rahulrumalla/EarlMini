@@ -1,6 +1,6 @@
 ﻿using System.Web.Http;
 
-namespace EarlMiniApi
+namespace EarlMini.Api
 {
     public static class WebApiConfig
     {

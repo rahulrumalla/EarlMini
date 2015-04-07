@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace UrlMini
+namespace EarlMini.Core
 {
     internal static class SafeRandomProvider
     {
@@ -9,6 +9,10 @@ namespace UrlMini
 
         private static readonly ThreadLocal<Random> RandomWrapper = new ThreadLocal<Random>( () => new Random( Interlocked.Increment( ref _seed ) ) );
 
+        /// <summary>
+        /// Provides a reliable thread-safe 'Random' class 
+        /// </summary>
+        /// <returns></returns>
         public static Random GetThreadRandom()
         {
             return RandomWrapper.Value;

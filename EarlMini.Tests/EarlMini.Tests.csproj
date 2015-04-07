@@ -48,9 +48,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EarlMini\EarlMini.csproj">
+    <ProjectReference Include="..\EarlMini\EarlMini.Core.csproj">
       <Project>{25a9f5aa-998f-402e-bcdb-ce18b03e4e00}</Project>
-      <Name>EarlMini</Name>
+      <Name>EarlMini.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

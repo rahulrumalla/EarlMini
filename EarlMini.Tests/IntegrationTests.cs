@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using EarlMini.Core;
 using NUnit.Framework;
 
-namespace UrlMini.Tests
+namespace EarlMini.Tests
 {
     [TestFixture]
     public class IntegrationTests

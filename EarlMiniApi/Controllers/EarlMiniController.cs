@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Web.Http;
-using UrlMini;
+using EarlMini.Core;
 
-namespace EarlMiniApi.Controllers
+namespace EarlMini.Api.Controllers
 {
     public class EarlMiniController : ApiController
     {
-        private Regex Regex = new Regex( "^[a-zA-Z0-9]*$" );
-
         [HttpPost]
         public IHttpActionResult Minify( [FromBody] string url, [FromBody] bool useSecureMiniUrl = false )
         {
@@ -36,7 +33,7 @@ namespace EarlMiniApi.Controllers
             {
                 Debug.WriteLine( ex );
 
-                return InternalServerError( ex );
+                return InternalServerError( );
             }
 
             return InternalServerError();
@@ -73,7 +70,7 @@ namespace EarlMiniApi.Controllers
             {
                 Debug.WriteLine( ex );
 
-                return InternalServerError( ex );
+                return InternalServerError( );
             }
 
             return NotFound();

@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 
-namespace EarlMiniApi
+namespace EarlMini.Api
 {
     public class FilterConfig
     {

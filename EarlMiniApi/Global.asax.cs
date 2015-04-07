@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
 using System.Web.Mvc;
 
-namespace EarlMiniApi
+namespace EarlMini.Api
 {
     public class WebApiApplication : System.Web.HttpApplication
     {

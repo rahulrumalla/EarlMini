@@ -4,9 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using EarlMini.Core;
 using NUnit.Framework;
 
-namespace UrlMini.Tests
+namespace EarlMini.Tests
 {
     [TestFixture]
     public class UnitTests
@@ -14,7 +15,7 @@ namespace UrlMini.Tests
         public const int ExpectedLengthOfFragment = 8;
 
         [Test]
-        public void Can_GenerateUniqueAplhaNumericStrings()
+        public void Can_GenerateUniqueAplhaNumericStrings_OverMillionIterations()
         {
             var fragments = new List<string>();
 
@@ -47,7 +48,7 @@ namespace UrlMini.Tests
         }
 
         [Test]
-        public void Can_GenerateUniqueAplhaNumericStrings_MultiThreaded()
+        public void Can_GenerateUniqueAplhaNumericStrings_OverMillionIterations_MultiThreaded()
         {
             var fragments = new BlockingCollection<string>();
 

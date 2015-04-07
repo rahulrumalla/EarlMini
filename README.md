@@ -5,7 +5,7 @@ The idea behind this project is to provide anyone a full-suite of lightwieght so
 
 Broadly speaking, this suite of artifacts comprise of
 
-1. Core EarlMini Library. ( The NuGet package will be soon made available )
+1. Core EarlMini Library. ( The NuGet package is coming soon! )
 2. The API ( .NET WEB API ) that can be hosted independently to serve 'minification' requests.
 3. Lastly, a lightweight website ( .NET MVC ) that merely *expands* the Url and redirects the caller.
 
