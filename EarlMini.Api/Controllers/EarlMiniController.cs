@@ -19,13 +19,13 @@ namespace EarlMini.Api.Controllers
 
                 var originalUri = new Uri( url );
 
-                Uri miniUri = EarlMiniProvider.MinifyUrl( originalUri, useSecureMiniUrl );
+                string miniUrl = EarlMiniProvider.MinifyUrl( originalUri, useSecureMiniUrl );
 
-                if ( miniUri != null && !string.IsNullOrWhiteSpace( miniUri.AbsoluteUri ) )
+                if ( !string.IsNullOrWhiteSpace( miniUrl ) )
                 {
                     return Ok( new
                     {
-                        miniUrl = miniUri.AbsoluteUri
+                        miniUrl
                     } );
                 }
             }

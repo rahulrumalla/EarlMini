@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Data.Common;
 using System.Linq;
 using EarlMini.Core.Data;
-using SequelocityDotNet;
 
 namespace EarlMini.Core
 {
@@ -19,13 +17,7 @@ namespace EarlMini.Core
 
         private static readonly int CharacterSetLength = CharacterSet.Length;
 
-        private const string SecureMiniUrlTemplate = "https://www.{0}/{1}";
-
-        private const string UnSecureMiniUrlTemplate = "http://{0}/{1}";
-
-        private const byte FragmentLength = 8;
-
-        private IRepository Repository { get; set; }
+        private static IRepository EarlMiniRepository { get; set; }
 
         #endregion
 
@@ -36,6 +28,12 @@ namespace EarlMini.Core
         public static string TableName { get; private set; }
 
         public static string HostName { get; private set; }
+
+        public static string SecureMiniUrlTemplate { get { return "https://www.{0}/{1}"; } }
+
+        public static string UnSecureMiniUrlTemplate { get { return "http://{0}/{1}"; } }
+
+        public static byte FragmentLength { get { return 8; } }
 
         #endregion
 
@@ -53,26 +51,18 @@ namespace EarlMini.Core
             HostName = "url.mini";
         }
 
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public EarlMiniProvider()
-            : this(new Repository())
-        {
-        }
+        #endregion
+
+        #region Public Methods
 
         /// <summary>
         /// This can used for testing purposes. Like, "Mock" injections
         /// </summary>
         /// <param name="repository"></param>
-        public EarlMiniProvider(IRepository repository)
+        public static void InitializeTestingConfiguration(IRepository repository)
         {
-            Repository = repository;
+            EarlMiniRepository = repository;
         }
-
-        #endregion
-
-        #region Public Methods
 
         /// <summary>
         /// Set Detaults
@@ -140,7 +130,7 @@ namespace EarlMini.Core
 
             string miniUrlFragment = GetLastSegmentFromUrl( miniUri );
 
-            string originalUrl = GetOriginalUrl( miniUrlFragment );
+            string originalUrl = EarlMiniRepository.GetOriginalUrl( miniUrlFragment );
 
             return originalUrl;
         }
@@ -171,7 +161,7 @@ namespace EarlMini.Core
         /// <param name="useSecureMiniUrl">If true uses 'https://www..' else 'http://..'</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static Uri MinifyUrl( string url, bool useSecureMiniUrl = false )
+        public static string MinifyUrl( string url, bool useSecureMiniUrl = false )
         {
             if(string.IsNullOrWhiteSpace(url))
                 throw new ArgumentNullException();
@@ -186,12 +176,12 @@ namespace EarlMini.Core
         /// <param name="useSecureMiniUrl"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public static Uri MinifyUrl( Uri uri, bool useSecureMiniUrl = false )
+        public static string MinifyUrl( Uri uri, bool useSecureMiniUrl = false )
         {
             if ( uri == null || string.IsNullOrWhiteSpace( uri.AbsoluteUri ) )
                 throw new ArgumentException( "uri is null or the url associated is null" );
 
-            bool success = false;
+            bool success;
 
             string miniUrl;
 
@@ -203,14 +193,14 @@ namespace EarlMini.Core
             {
                 string fragment = GenerateFragment();
 
-                miniUrl = String.Format( HostName, useSecureMiniUrl ? SecureMiniUrlTemplate : UnSecureMiniUrlTemplate, fragment );
+                miniUrl = String.Format( useSecureMiniUrl ? SecureMiniUrlTemplate : UnSecureMiniUrlTemplate, HostName, fragment );
 
                 //Check if this url is already existing
-                string alreadyExistingMiniUrl = GetMiniUrl( originalUrl );
+                string alreadyExistingMiniUrl = EarlMiniRepository.GetMiniUrl( originalUrl );
 
                 if ( string.IsNullOrWhiteSpace( alreadyExistingMiniUrl ) )
                 {
-                    success = SaveMiniUrl( originalUrl, fragment, ref miniUrl );
+                    success = EarlMiniRepository.SaveMiniUrl( originalUrl, fragment, miniUrl );
                 }
                 else
                 {
@@ -222,10 +212,10 @@ namespace EarlMini.Core
                 tries--;
             } while ( success == false && tries > 0 );
 
-            if (string.IsNullOrWhiteSpace(miniUrl))
-                return null;
-
-            return new Uri( miniUrl );
+            if (success)
+                return miniUrl;
+            
+            return string.Empty;
         }
 
         /// <summary>
@@ -244,84 +234,6 @@ namespace EarlMini.Core
             }
 
             return new string( result );
-        } 
-
-        #endregion
-
-        #region Private Methods
-
-        private static bool SaveMiniUrl(string originalUrl, string fragment, ref string miniUrl)
-        {
-            DbConnection connection = Sequelocity.CreateDbConnection(ConnectionStringName);
-
-            var result = Sequelocity.GetDatabaseCommand(connection)
-                .GenerateInsertForSqlServer(new
-                {
-                    OriginalUrl = originalUrl,
-                    OriginalUrlHash = GetSqlBinaryCheckSum(originalUrl),
-                    MiniUrl = miniUrl,
-                    Fragment = fragment,
-                    FragmentHash = GetSqlBinaryCheckSum(fragment),
-                    CreateDate = DateTime.Now
-                }, TableName)
-                .ExecuteScalar<int>();
-
-            bool success = result > 0;
-
-            return success;
-        }
-
-        private static string GetOriginalUrl( string fragment )
-        {
-            const string sql = @"
-SELECT  em.OriginalUrl
-FROM    dbo.EarlMini em
-WHERE   em.FragmentHash = BINARY_CHECKSUM(@Fragment) 
-";
-
-            DbConnection connection = Sequelocity.CreateDbConnection( ConnectionStringName );
-
-            var result = Sequelocity
-                .GetDatabaseCommand( connection )
-                .SetCommandText( sql )
-                .AddParameter( "@Fragment", fragment )
-                .ExecuteScalar<string>();
-
-            return result;
-        }
-
-        private static string GetMiniUrl( string url )
-        {
-            const string sql = @"
-SELECT  em.MiniUrl
-FROM    dbo.EarlMini em
-WHERE   em.OriginalUrlHash = BINARY_CHECKSUM(@Url) 
-";
-
-            DbConnection connection = Sequelocity.CreateDbConnection( ConnectionStringName );
-
-            var result = Sequelocity
-                .GetDatabaseCommand( connection )
-                .SetCommandText( sql )
-                .AddParameter( "@Url", url )
-                .ExecuteScalar<string>();
-
-            return result;
-        }
-
-        private static int GetSqlBinaryCheckSum( string fragment )
-        {
-            const string sql = @"SELECT BINARY_CHECKSUM(@Fragment)";
-
-            DbConnection connection = Sequelocity.CreateDbConnection( ConnectionStringName );
-
-            var checksum = Sequelocity
-                .GetDatabaseCommand( connection )
-                .SetCommandText( sql )
-                .AddParameter( "@Fragment", fragment )
-                .ExecuteScalar<int>();
-
-            return checksum;
         } 
 
         #endregion

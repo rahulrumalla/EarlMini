@@ -11,11 +11,10 @@ namespace EarlMini.Tests
         [TestCase( "https://www.google.com" )]
         public void Can_Minify_Url(string originalUrl)
         {
-            Uri miniUrl = EarlMiniProvider.MinifyUrl(originalUrl);
+            string miniUrl = EarlMiniProvider.MinifyUrl(originalUrl);
 
-            Assert.IsNotNull(miniUrl);
-            Assert.IsNotNullOrEmpty(miniUrl.AbsoluteUri);
-            Assert.IsTrue(miniUrl.AbsoluteUri.Length == 22);
+            Assert.IsNotNullOrEmpty(miniUrl);
+            Assert.IsTrue(miniUrl.Length == 22);
         }
     }
 }

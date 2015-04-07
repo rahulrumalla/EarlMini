@@ -6,7 +6,7 @@ namespace EarlMini.Core.Data
 {
     internal sealed class Repository : IRepository
     {
-        bool SaveMiniUrl( string originalUrl, string fragment, ref string miniUrl )
+        public bool SaveMiniUrl( string originalUrl, string fragment, string miniUrl )
         {
             DbConnection connection = Sequelocity.CreateDbConnection( EarlMiniProvider.ConnectionStringName );
 
@@ -27,7 +27,7 @@ namespace EarlMini.Core.Data
             return success;
         }
 
-        string GetOriginalUrl( string fragment )
+        public string GetOriginalUrl( string fragment )
         {
             const string sql = @"
 SELECT  em.OriginalUrl
@@ -46,7 +46,7 @@ WHERE   em.FragmentHash = BINARY_CHECKSUM(@Fragment)
             return result;
         }
 
-        string GetMiniUrl( string url )
+        public string GetMiniUrl( string url )
         {
             const string sql = @"
 SELECT  em.MiniUrl
@@ -65,7 +65,7 @@ WHERE   em.OriginalUrlHash = BINARY_CHECKSUM(@Url)
             return result;
         }
 
-        int GetSqlBinaryCheckSum( string fragment )
+        public int GetSqlBinaryCheckSum( string fragment )
         {
             const string sql = @"SELECT BINARY_CHECKSUM(@Fragment)";
 

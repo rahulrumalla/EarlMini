@@ -6,14 +6,34 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EarlMini.Core;
+using EarlMini.Core.Data;
 using NUnit.Framework;
+using Moq;
 
 namespace EarlMini.Tests
 {
     [TestFixture]
     public class UnitTests
     {
-        public const int ExpectedLengthOfFragment = 8;
+        private const int ExpectedLengthOfFragment = 8;
+
+        private int ExpectedLenthOfUnsecureMiniUrl
+        {
+            get
+            {
+                return String.Format(EarlMiniProvider.UnSecureMiniUrlTemplate, EarlMiniProvider.HostName, string.Empty).Length + EarlMiniProvider.FragmentLength;
+            }
+        }
+
+        private int ExpectedLenthOfSecureMiniUrl
+        {
+            get
+            {
+                return String.Format( EarlMiniProvider.SecureMiniUrlTemplate, EarlMiniProvider.HostName, string.Empty ).Length + EarlMiniProvider.FragmentLength;
+            }
+        }
+
+        private readonly Mock<IRepository> _repositoryMock = new Mock<IRepository>();
 
         [Test]
         public void Can_GenerateUniqueAplhaNumericStrings_ForMillionIterations()
@@ -144,6 +164,56 @@ namespace EarlMini.Tests
             Assert.IsTrue( !lastSegment.EndsWith("/") );
             Assert.IsTrue( !lastSegment.Contains("/") );
             Assert.AreEqual( lastSegment, "abcd1234" );
+        }
+
+        [Test]
+        [TestCase( "https://www.google.com" )]
+        [TestCase( "https://www.google.com/" )]
+        public void Can_MinifyUrl_UsingUnsecureTemplate(string url)
+        {
+            //Arrange
+            _repositoryMock.Setup(x => x.GetSqlBinaryCheckSum(It.IsAny<string>()))
+                .Returns(-123456);
+
+            _repositoryMock.Setup(x => x.GetMiniUrl(It.IsAny<string>()))
+                .Returns(string.Empty);
+            
+            _repositoryMock.Setup( x => x.SaveMiniUrl( It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns(true);
+
+            EarlMiniProvider.InitializeTestingConfiguration(_repositoryMock.Object);
+
+            //Act
+            string miniUrl = EarlMiniProvider.MinifyUrl( url );
+
+            //Assert
+            Assert.IsNotNullOrEmpty( miniUrl );
+            Assert.IsTrue( miniUrl.Length == ExpectedLenthOfUnsecureMiniUrl );
+        }
+
+        [Test]
+        [TestCase( "https://www.google.com" )]
+        [TestCase( "https://www.google.com/" )]
+        public void Can_MinifyUrl_UsingSecureTemplate( string url )
+        {
+            //Arrange
+            _repositoryMock.Setup( x => x.GetSqlBinaryCheckSum( It.IsAny<string>() ) )
+                .Returns( -123456 );
+
+            _repositoryMock.Setup( x => x.GetMiniUrl( It.IsAny<string>() ) )
+                .Returns( string.Empty );
+
+            _repositoryMock.Setup( x => x.SaveMiniUrl( It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( true );
+
+            EarlMiniProvider.InitializeTestingConfiguration( _repositoryMock.Object );
+
+            //Act
+            string miniUrl = EarlMiniProvider.MinifyUrl( url, true );
+
+            //Assert
+            Assert.IsNotNullOrEmpty( miniUrl );
+            Assert.IsTrue( miniUrl.Length == ExpectedLenthOfSecureMiniUrl );
         }
     }
 }
