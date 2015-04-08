@@ -12,7 +12,7 @@ namespace EarlMini.Core
         #region Private Variables
 
         private const string CharacterSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
+        
         private static readonly char[] CharacterSetArray = CharacterSet.ToCharArray();
 
         private static readonly int CharacterSetLength = CharacterSet.Length;
@@ -34,6 +34,8 @@ namespace EarlMini.Core
         public static string UnSecureMiniUrlTemplate { get { return "http://{0}/{1}"; } }
 
         public static byte FragmentLength { get { return 8; } }
+
+        public static int MaxNumberOfTriesToGenerateUniqueFragment { get { return 5; } }
 
         #endregion
 
@@ -187,7 +189,7 @@ namespace EarlMini.Core
 
             string originalUrl = uri.AbsoluteUri;
 
-            int tries = 5;
+            int tries = MaxNumberOfTriesToGenerateUniqueFragment;
 
             do
             {
