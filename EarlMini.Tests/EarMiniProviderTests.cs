@@ -47,19 +47,9 @@ namespace EarlMini.Tests
 
             for ( int i = 0 ; i < 1000000 ; i++ )
             {
-                var generatedFragment = EarlMiniProvider.GenerateFragment();
+                var generatedFragment = GenerateFragment( fragments );
 
-                //Debug.WriteLine( generatedFragment );
-
-                fragments.Add( generatedFragment );
-
-                var regex = new Regex( "^[a-zA-Z0-9]*$" );
-
-                Assert.IsNotNullOrEmpty( generatedFragment );
-                Assert.IsTrue( generatedFragment.Length == EarlMiniProvider.FragmentLength );
-                Assert.IsTrue( generatedFragment.Trim().Length == EarlMiniProvider.FragmentLength );
-                Assert.IsTrue( generatedFragment.Replace( " ", "" ).Length == EarlMiniProvider.FragmentLength );
-                Assert.IsTrue( regex.IsMatch( generatedFragment ) );
+                ValidateGeneratedFragment( generatedFragment );
             }
 
             bool success = fragments.Count == fragments.Distinct().Count();
@@ -81,20 +71,10 @@ namespace EarlMini.Tests
 
             Parallel.For( 0, 1000000, i =>
             {
-                var generatedFragment = EarlMiniProvider.GenerateFragment();
+                var generatedFragment = GenerateFragment(fragments);
 
-                //Debug.WriteLine( generatedFragment );
-
-                fragments.Add( generatedFragment );
-
-                var regex = new Regex( "^[a-zA-Z0-9]*$" );
-
-                Assert.IsNotNullOrEmpty( generatedFragment );
-                Assert.IsTrue( generatedFragment.Length == EarlMiniProvider.FragmentLength );
-                Assert.IsTrue( generatedFragment.Trim().Length == EarlMiniProvider.FragmentLength );
-                Assert.IsTrue( generatedFragment.Replace( " ", "" ).Length == EarlMiniProvider.FragmentLength );
-                Assert.IsTrue( regex.IsMatch( generatedFragment ) );
-            } );
+                ValidateGeneratedFragment(generatedFragment);
+            });
 
             bool success = fragments.Count == fragments.Distinct().Count();
 
@@ -307,5 +287,34 @@ namespace EarlMini.Tests
         {
             EarlMiniProvider.MinifyUrl( string.Empty );
         }
+
+        #region Private Methods
+        
+        private static void ValidateGeneratedFragment( string generatedFragment )
+        {
+            var regex = new Regex( "^[a-zA-Z0-9]*$" );
+
+            Assert.IsNotNullOrEmpty( generatedFragment );
+            Assert.IsTrue( generatedFragment.Length == EarlMiniProvider.FragmentLength );
+            Assert.IsTrue( generatedFragment.Trim().Length == EarlMiniProvider.FragmentLength );
+            Assert.IsTrue( generatedFragment.Replace( " ", "" ).Length == EarlMiniProvider.FragmentLength );
+            Assert.IsTrue( regex.IsMatch( generatedFragment ) );
+        }
+
+        private static string GenerateFragment( BlockingCollection<string> fragments )
+        {
+            var generatedFragment = EarlMiniProvider.GenerateFragment();
+            fragments.Add( generatedFragment );
+            return generatedFragment;
+        }
+
+        private static string GenerateFragment( IList<string> fragments )
+        {
+            var generatedFragment = EarlMiniProvider.GenerateFragment();
+            fragments.Add( generatedFragment );
+            return generatedFragment;
+        }
+
+        #endregion
     }
 }

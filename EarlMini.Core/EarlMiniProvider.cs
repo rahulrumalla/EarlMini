@@ -42,15 +42,11 @@ namespace EarlMini.Core
         #region Constructors
         
         /// <summary>
-        /// Set Detaults
+        /// Set Defaults
         /// </summary>
         static EarlMiniProvider()
         {
-            ConnectionStringName = "EarlMini";
-
-            TableName = "[dbo].[EarlMini]";
-
-            HostName = "url.mini";
+            InitializeDefaultConfiguration();
         }
 
         #endregion
@@ -76,6 +72,8 @@ namespace EarlMini.Core
             TableName = "[dbo].[EarlMini]";
 
             HostName = "url.mini";
+
+            EarlMiniRepository = new Repository();
         }
 
         /// <summary>

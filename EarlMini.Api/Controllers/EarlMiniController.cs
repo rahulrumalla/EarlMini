@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Web.Http;
 using EarlMini.Core;
+using Newtonsoft.Json.Linq;
 
 namespace EarlMini.Api.Controllers
 {
     public class EarlMiniController : ApiController
     {
         [HttpPost]
-        public IHttpActionResult Minify( [FromBody] string url, [FromBody] bool useSecureMiniUrl = false )
+        public IHttpActionResult Minify( [FromBody] JToken jsonBody )
         {
+            var url = jsonBody.Value<string>("url");
+
             try
             {
                 if ( string.IsNullOrWhiteSpace( url ) )
@@ -19,7 +23,7 @@ namespace EarlMini.Api.Controllers
 
                 var originalUri = new Uri( url );
 
-                string miniUrl = EarlMiniProvider.MinifyUrl( originalUri, useSecureMiniUrl );
+                string miniUrl = EarlMiniProvider.MinifyUrl( originalUri );
 
                 if ( !string.IsNullOrWhiteSpace( miniUrl ) )
                 {
@@ -39,7 +43,7 @@ namespace EarlMini.Api.Controllers
             return InternalServerError();
         }
 
-        [HttpGet]
+        [System.Web.Http.HttpGet]
         public IHttpActionResult Expand( string miniUrl )
         {
             try

@@ -16,6 +16,12 @@ namespace EarlMini.Api
                 routeTemplate: "v1/api/{controller}/{action}/{id}",
                 defaults: new { action = "Index", id = RouteParameter.Optional }
             );
+
+            config.Routes.MapHttpRoute(
+                name: "Site",
+                routeTemplate: "{url}/{controller}/{action}/{id}",
+                defaults: new { action = "Index", controller = "Home", id = RouteParameter.Optional }
+            );
         }
     }
 }
